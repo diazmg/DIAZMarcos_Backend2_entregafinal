@@ -14,9 +14,16 @@ const initializePassport = () => {
     passport.use("register", new LocalStrategy(
         { usernameField: "email", passReqToCallback: true },
         async (req, email, password, done) => {
+            console.log("BODY:", req.body);
             try {
                 const exists = await UserModel.findOne({ email });
-                if (exists) return done(null, false);
+                if (exists) {
+                    return done(null, false, { message: "El usuario ya existe" });
+                }
+
+                if (!email || !password) {
+                    return done(null, false, { message: "Datos incompletos" });
+                }
 
                 const newCart = await CartModel.create({ products: [] });
                 const user = await UserModel.create({
@@ -47,7 +54,7 @@ const initializePassport = () => {
     passport.use("jwt", new JwtStrategy(
         {
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey: "jwtSecret"
+            secretOrKey: process.env.JWT_SECRET
         },
         async (jwt_payload, done) => {
             try {
