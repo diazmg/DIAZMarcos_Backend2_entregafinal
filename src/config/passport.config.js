@@ -14,7 +14,6 @@ const initializePassport = () => {
     passport.use("register", new LocalStrategy(
         { usernameField: "email", passReqToCallback: true },
         async (req, email, password, done) => {
-            console.log("BODY:", req.body);
             try {
                 const exists = await UserModel.findOne({ email });
                 if (exists) {
@@ -54,7 +53,7 @@ const initializePassport = () => {
     passport.use("jwt", new JwtStrategy(
         {
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey: process.env.JWT_SECRET
+            secretOrKey: process.env.JWT_SECRET,
         },
         async (jwt_payload, done) => {
             try {
