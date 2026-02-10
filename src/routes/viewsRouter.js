@@ -6,6 +6,21 @@ const router = Router();
 const ProductService = new productDBManager();
 const CartService = new cartDBManager(ProductService);
 
+
+router.get('/login', (req, res) => {
+    res.render('login', {
+        title: 'Login',
+        style: 'index.css'
+    });
+});
+
+router.get('/register', (req, res) => {
+    res.render('register', {
+        title: 'Register',
+        style: 'index.css'
+    });
+});
+
 router.get('/products', async (req, res) => {
     const products = await ProductService.getAllProducts(req.query);
 

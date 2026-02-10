@@ -2,6 +2,7 @@ import passport from "passport";
 import local from "passport-local";
 import { UserModel } from "../dao/models/user.model.js";
 import { createHash, isValidPassword } from "../utils/hash.js";
+import { cartModel as CartModel } from "../dao/models/cartModel.js";
 import jwt from "passport-jwt";
 
 const LocalStrategy = local.Strategy;
