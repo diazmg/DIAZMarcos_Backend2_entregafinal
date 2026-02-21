@@ -1,92 +1,92 @@
-import { Router } from 'express';
-import { productDBManager } from '../dao/productDBManager.js';
-import { uploader } from '../utils/multerUtil.js';
+import { Router } from "express";
+import { uploader } from "../utils/multerUtil.js";
+
+import ProductDAO from "../dao/mongo/products.dao.js";
+import ProductsRepository from "../repositories/products.repository.js";
 
 const router = Router();
-const ProductService = new productDBManager();
 
-router.get('/', async (req, res) => {
-    const result = await ProductService.getAllProducts(req.query);
+const productDAO = new ProductDAO();
+const productRepository = new ProductsRepository(productDAO);
 
-    res.send({
-        status: 'success',
-        payload: result
-    });
-});
-
-router.get('/:pid', async (req, res) => {
-
+router.get("/", async (req, res) => {
     try {
-        const result = await ProductService.getProductByID(req.params.pid);
+        const result = await productRepository.getAll(req.query);
         res.send({
-            status: 'success',
+            status: "success",
             payload: result
         });
     } catch (error) {
         res.status(400).send({
-            status: 'error',
+            status: "error",
             message: error.message
         });
     }
 });
 
-router.post('/', uploader.array('thumbnails', 3), async (req, res) => {
+router.get("/:pid", async (req, res) => {
+    try {
+        const result = await productRepository.getById(req.params.pid);
+        res.send({
+            status: "success",
+            payload: result
+        });
+    } catch (error) {
+        res.status(400).send({
+            status: "error",
+            message: error.message
+        });
+    }
+});
 
+router.post("/", uploader.array("thumbnails", 3), async (req, res) => {
     if (req.files) {
-        req.body.thumbnails = [];
-        req.files.forEach((file) => {
-            req.body.thumbnails.push(file.path);
-        });
+        req.body.thumbnails = req.files.map(file => file.path);
     }
 
     try {
-        const result = await ProductService.createProduct(req.body);
+        const result = await productRepository.create(req.body);
         res.send({
-            status: 'success',
+            status: "success",
             payload: result
         });
     } catch (error) {
         res.status(400).send({
-            status: 'error',
+            status: "error",
             message: error.message
         });
     }
 });
 
-router.put('/:pid', uploader.array('thumbnails', 3), async (req, res) => {
-
+router.put("/:pid", uploader.array("thumbnails", 3), async (req, res) => {
     if (req.files) {
-        req.body.thumbnails = [];
-        req.files.forEach((file) => {
-            req.body.thumbnails.push(file.filename);
-        });
+        req.body.thumbnails = req.files.map(file => file.path);
     }
 
     try {
-        const result = await ProductService.updateProduct(req.params.pid, req.body);
+        const result = await productRepository.update(req.params.pid, req.body);
         res.send({
-            status: 'success',
+            status: "success",
             payload: result
         });
     } catch (error) {
         res.status(400).send({
-            status: 'error',
+            status: "error",
             message: error.message
         });
     }
 });
 
-router.delete('/:pid', async (req, res) => {
-
+router.delete("/:pid", async (req, res) => {
     try {
-        const result = await ProductService.deleteProduct(req.params.pid);
+        const result = await productRepository.delete(req.params.pid);
         res.send({
-            status: 'success',
+            status: "success",
             payload: result
         });
     } catch (error) {
         res.status(400).send({
-            status: 'error',
+            status: "error",
             message: error.message
         });
     }

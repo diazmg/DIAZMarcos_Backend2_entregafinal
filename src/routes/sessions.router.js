@@ -1,6 +1,7 @@
 import { Router } from "express";
 import passport from "passport";
 import { generateToken } from "../utils/jwt.js";
+import UserDTO from "../dto/user.dto.js";
 
 const router = Router();
 
@@ -22,7 +23,8 @@ router.post("/login",
 router.get("/current",
     passport.authenticate("jwt", { session: false }),
     (req, res) => {
-        res.send({ status: "success", user: req.user });
+        const safeUser = new UserDTO(req.user);
+        res.send({ status: "success", user: safeUser });
     }
 );
 

@@ -1,121 +1,50 @@
-import { Router } from 'express';
-import { productDBManager } from '../dao/productDBManager.js';
-import { cartDBManager } from '../dao/cartDBManager.js';
+import { Router } from "express";
+import passport from "passport";
+
+import { authorize } from "../middlewares/authorization.js";
+
+import CartDAO from "../dao/mongo/carts.dao.js";
+import ProductDAO from "../dao/mongo/products.dao.js";
+import TicketDAO from "../dao/mongo/ticket.dao.js";
+
+import CartRepository from "../repositories/carts.repository.js";
+import ProductsRepository from "../repositories/products.repository.js";
+import TicketRepository from "../repositories/tickets.repository.js";
+
+import CartsService from "../services/carts.service.js";
+import CartsController from "../controllers/carts.controller.js";
 
 const router = Router();
-const ProductService = new productDBManager();
-const CartService = new cartDBManager(ProductService);
 
-router.get('/:cid', async (req, res) => {
+const cartDAO = new CartDAO();
+const productDAO = new ProductDAO();
+const ticketDAO = new TicketDAO();
 
-    try {
-        const result = await CartService.getProductsFromCartByID(req.params.cid);
-        res.send({
-            status: 'success',
-            payload: result
-        });
-    } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
-    }
-});
+const cartRepository = new CartRepository(cartDAO);
+const productRepository = new ProductsRepository(productDAO);
+const ticketRepository = new TicketRepository(ticketDAO);
 
-router.post('/', async (req, res) => {
+const cartsService = new CartsService(
+    cartRepository,
+    productRepository,
+    ticketRepository
+);
 
-    try {
-        const result = await CartService.createCart();
-        res.send({
-            status: 'success',
-            payload: result
-        });
-    } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
-    }
-});
+const cartsController = new CartsController(cartsService);
 
-router.post('/:cid/product/:pid', async (req, res) => {
+router.get("/:cid", cartsController.getById);
+router.post("/", cartsController.create);
+router.post("/:cid/product/:pid", cartsController.addProduct);
+router.delete("/:cid/product/:pid", cartsController.deleteProduct);
+router.put("/:cid", cartsController.updateProducts);
+router.put("/:cid/product/:pid", cartsController.updateProductQuantity);
+router.delete("/:cid", cartsController.clearCart);
 
-    try {
-        const result = await CartService.addProductByID(req.params.cid, req.params.pid)
-        res.send({
-            status: 'success',
-            payload: result
-        });
-    } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
-    }
-});
-
-router.delete('/:cid/product/:pid', async (req, res) => {
-
-    try {
-        const result = await CartService.deleteProductByID(req.params.cid, req.params.pid)
-        res.send({
-            status: 'success',
-            payload: result
-        });
-    } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
-    }
-});
-
-router.put('/:cid', async (req, res) => {
-
-    try {
-        const result = await CartService.updateAllProducts(req.params.cid, req.body.products)
-        res.send({
-            status: 'success',
-            payload: result
-        });
-    } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
-    }
-});
-
-router.put('/:cid/product/:pid', async (req, res) => {
-
-    try {
-        const result = await CartService.updateProductByID(req.params.cid, req.params.pid, req.body.quantity)
-        res.send({
-            status: 'success',
-            payload: result
-        });
-    } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
-    }
-});
-
-router.delete('/:cid', async (req, res) => {
-
-    try {
-        const result = await CartService.deleteAllProducts(req.params.cid)
-        res.send({
-            status: 'success',
-            payload: result
-        });
-    } catch (error) {
-        res.status(400).send({
-            status: 'error',
-            message: error.message
-        });
-    }
-});
+router.post(
+    "/:cid/purchase",
+    passport.authenticate("jwt", { session: false }),
+    authorize(["user"]),
+    cartsController.purchase
+);
 
 export default router;
