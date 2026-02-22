@@ -4,3 +4,5 @@
 /public/img/**
 products.json
 carts.json
+/src/dao/cartFSManager.js
+/src/dao/productFSManager.js
