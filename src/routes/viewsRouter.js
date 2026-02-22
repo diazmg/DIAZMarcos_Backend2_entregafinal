@@ -28,6 +28,12 @@ router.get("/current", (req, res) => {
     });
 });
 
+
+router.get("/", (req, res) => {
+    res.redirect("/products");
+});
+
+
 router.get('/products', async (req, res) => {
     const products = await ProductService.getAll(req.query);
 

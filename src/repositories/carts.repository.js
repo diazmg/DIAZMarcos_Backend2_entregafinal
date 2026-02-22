@@ -1,4 +1,5 @@
 export default class CartsRepository {
+
     constructor(dao) {
         this.dao = dao;
     }
@@ -17,5 +18,5 @@ export default class CartsRepository {
 
     clear = async (cid) => {
         return await this.dao.clear(cid);
-    }
+    };
 }

@@ -34,12 +34,8 @@ const cartsController = new CartsController(cartsService);
 
 router.get("/:cid", cartsController.getById);
 router.post("/", cartsController.create);
-router.post("/:cid/product/:pid", cartsController.addProduct);
-router.delete("/:cid/product/:pid", cartsController.deleteProduct);
 router.put("/:cid", cartsController.updateProducts);
-router.put("/:cid/product/:pid", cartsController.updateProductQuantity);
 router.delete("/:cid", cartsController.clearCart);
-
 router.post(
     "/:cid/purchase",
     passport.authenticate("jwt", { session: false }),

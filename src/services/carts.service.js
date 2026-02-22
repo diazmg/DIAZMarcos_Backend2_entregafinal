@@ -1,11 +1,28 @@
 import crypto from "crypto";
 
 export default class CartsService {
+
     constructor(cartRepository, productRepository, ticketRepository) {
         this.cartRepository = cartRepository;
         this.productRepository = productRepository;
         this.ticketRepository = ticketRepository;
     }
+
+    getById = async (cid) => {
+        return await this.cartRepository.getById(cid);
+    };
+
+    create = async () => {
+        return await this.cartRepository.create();
+    };
+
+    updateProducts = async (cid, products) => {
+        return await this.cartRepository.updateProducts(cid, products);
+    };
+
+    clearCart = async (cid) => {
+        return await this.cartRepository.clear(cid);
+    };
 
     purchaseCart = async (cid, purchaserEmail) => {
 
