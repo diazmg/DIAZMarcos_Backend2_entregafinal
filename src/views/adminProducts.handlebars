@@ -1,18 +1,36 @@
-{{#extend "main"}}
+{{!< main}}
 
-{{#content "body"}}
 <h1>Administración de Productos</h1>
 
-<form id="form-add-product" action="/products" method="POST" enctype="multipart/form-data">
-    <div><label for="title">Título:</label><input type="text" name="title" id="title" required></div>
-    <div><label for="description">Descripción:</label><textarea name="description" id="description" required></textarea>
+<form id="form-add-product" action="/api/products" method="POST" enctype="multipart/form-data">
+    <div>
+        <label for="title">Título:</label>
+        <input type="text" name="title" id="title" required>
     </div>
-    <div><label for="code">Código:</label><input type="text" name="code" id="code" required></div>
-    <div><label for="price">Precio:</label><input type="number" name="price" id="price" required></div>
-    <div><label for="stock">Stock:</label><input type="number" name="stock" id="stock" required></div>
-    <div><label for="category">Categoría:</label><input type="text" name="category" id="category" required></div>
-    <div><label for="thumbnails">Imágenes:</label><input type="file" name="thumbnails" id="thumbnails" multiple
-            accept="image/*"></div>
+    <div>
+        <label for="description">Descripción:</label>
+        <textarea name="description" id="description" required></textarea>
+    </div>
+    <div>
+        <label for="code">Código:</label>
+        <input type="text" name="code" id="code" required>
+    </div>
+    <div>
+        <label for="price">Precio:</label>
+        <input type="number" name="price" id="price" required>
+    </div>
+    <div>
+        <label for="stock">Stock:</label>
+        <input type="number" name="stock" id="stock" required>
+    </div>
+    <div>
+        <label for="category">Categoría:</label>
+        <input type="text" name="category" id="category" required>
+    </div>
+    <div>
+        <label for="thumbnails">Imágenes:</label>
+        <input type="file" name="thumbnails" id="thumbnails" multiple accept="image/*">
+    </div>
     <button type="submit">Agregar Producto</button>
 </form>
 
@@ -30,4 +48,3 @@
 </div>
 
 <script src="/js/adminProducts.js"></script>
-{{/content}}

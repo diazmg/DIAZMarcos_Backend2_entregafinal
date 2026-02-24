@@ -34,6 +34,7 @@ const cartsController = new CartsController(cartsService);
 
 router.get("/:cid", cartsController.getById);
 router.post("/", cartsController.create);
+router.post("/:cid/product/:pid", cartsController.addProductAndRenderCart);
 router.put("/:cid", cartsController.updateProducts);
 router.delete("/:cid", cartsController.clearCart);
 router.post(

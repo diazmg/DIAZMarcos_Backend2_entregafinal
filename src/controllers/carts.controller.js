@@ -4,6 +4,49 @@ export default class CartsController {
         this.service = service;
     }
 
+    renderCart = async (req, res) => {
+        try {
+            const cart = await this.service.getById(req.params.cid);
+
+            const total = cart.products.reduce((acc, item) => {
+                return acc + (item.product.price * item.quantity);
+            }, 0);
+
+            res.render('cart', {
+                title: 'Mi Carrito',
+                style: 'index.css',
+                cart,
+                total
+            });
+        } catch (error) {
+            res.status(400).send({ status: 'error', message: error.message });
+        }
+    };
+
+    addProductAndRenderCart = async (req, res) => {
+        try {
+            await this.service.addProduct(req.params.cid, req.params.pid);
+            const cart = await this.service.getById(req.params.cid);
+
+            const total = cart.products.reduce((acc, item) => {
+                return acc + item.product.price * item.quantity;
+            }, 0);
+
+            res.render("cart", { cart, total, title: "Mi Carrito", style: "index.css" });
+        } catch (error) {
+            res.status(400).send({ status: "error", message: error.message });
+        }
+    };
+
+    addProduct = async (req, res) => {
+        try {
+            const cart = await this.service.addProduct(req.params.cid, req.params.pid);
+            res.send({ status: "success", payload: cart });
+        } catch (error) {
+            res.status(400).send({ status: "error", message: error.message });
+        }
+    };
+
     getById = async (req, res) => {
         try {
             const result = await this.service.getById(req.params.cid);

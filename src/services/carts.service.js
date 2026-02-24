@@ -8,6 +8,24 @@ export default class CartsService {
         this.ticketRepository = ticketRepository;
     }
 
+    addProduct = async (cid, pid) => {
+        const product = await this.productRepository.getById(pid);
+        if (!product) throw new Error("Producto no encontrado");
+
+        const cart = await this.cartRepository.getById(cid);
+        if (!cart) throw new Error("Carrito no encontrado");
+
+        const index = cart.products.findIndex(p => p.product._id.toString() === pid);
+        if (index > -1) {
+            cart.products[index].quantity += 1;
+        } else {
+            cart.products.push({ product: pid, quantity: 1 });
+        }
+
+        await cart.save();
+        return cart;
+    };
+
     getById = async (cid) => {
         return await this.cartRepository.getById(cid);
     };

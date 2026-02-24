@@ -28,7 +28,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 //Handlebars Config
-app.engine('handlebars', handlebars.engine({ defaultLayout: 'main' }));
+app.engine('handlebars', handlebars.engine({
+    defaultLayout: 'main',
+    helpers: {
+        multiply: (a, b) => a * b
+    }
+}));
 app.set('views', __dirname + '/../views');
 app.set('view engine', 'handlebars');
 
