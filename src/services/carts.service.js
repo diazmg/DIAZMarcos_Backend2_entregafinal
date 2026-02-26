@@ -13,17 +13,19 @@ export default class CartsService {
         if (!product) throw new Error("Producto no encontrado");
 
         const cart = await this.cartRepository.getById(cid);
-        if (!cart) throw new Error("Carrito no encontrado");
 
-        const index = cart.products.findIndex(p => p.product._id.toString() === pid);
+        const index = cart.products.findIndex(p => {
+            const prodId = p.product?._id ? p.product._id.toString() : p.product.toString();
+            return prodId === pid;
+        });
+
         if (index > -1) {
             cart.products[index].quantity += 1;
         } else {
             cart.products.push({ product: pid, quantity: 1 });
         }
 
-        await cart.save();
-        return cart;
+        return await this.cartRepository.updateProducts(cid, cart.products);
     };
 
     getById = async (cid) => {

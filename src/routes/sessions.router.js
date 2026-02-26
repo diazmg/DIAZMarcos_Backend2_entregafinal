@@ -16,7 +16,14 @@ router.post("/login",
     passport.authenticate("login", { session: false }),
     (req, res) => {
         const token = generateToken(req.user);
-        res.send({ status: "success", token });
+        res.cookie("coderCookie", token, {
+            maxAge: 60 * 60 * 1000,
+            httpOnly: true,
+        }).send({
+            status: "success",
+            message: "Logged in successfully",
+            user: req.user
+        });
     }
 );
 

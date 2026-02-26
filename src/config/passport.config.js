@@ -9,6 +9,15 @@ const LocalStrategy = local.Strategy;
 const JwtStrategy = jwt.Strategy;
 const ExtractJwt = jwt.ExtractJwt;
 
+
+const cookieExtractor = req => {
+    let token = null;
+    if (req && req.cookies) {
+        token = req.cookies['coderCookie'];
+    }
+    return token;
+};
+
 const initializePassport = () => {
 
     passport.use("register", new LocalStrategy(
@@ -52,7 +61,10 @@ const initializePassport = () => {
 
     passport.use("jwt", new JwtStrategy(
         {
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+            jwtFromRequest: ExtractJwt.fromExtractors([
+                ExtractJwt.fromAuthHeaderAsBearerToken(),
+                cookieExtractor
+            ]),
             secretOrKey: process.env.JWT_SECRET,
         },
         async (jwt_payload, done) => {

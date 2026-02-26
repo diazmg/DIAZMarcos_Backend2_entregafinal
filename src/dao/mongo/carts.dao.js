@@ -5,7 +5,8 @@ export default class CartDAO {
     async getById(cid) {
         const cart = await cartModel
             .findById(cid)
-            .populate("products.product");
+            .populate("products.product")
+            .lean();
 
         if (!cart) {
             throw new Error(`El carrito ${cid} no existe`);

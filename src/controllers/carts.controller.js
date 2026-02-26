@@ -40,12 +40,17 @@ export default class CartsController {
 
     addProduct = async (req, res) => {
         try {
-            const cart = await this.service.addProduct(req.params.cid, req.params.pid);
-            res.send({ status: "success", payload: cart });
+            const pid = req.params.pid;
+            const cid = req.user.cart;
+
+            const result = await this.service.addProduct(cid, pid);
+
+            res.send({ status: 'success', payload: result });
         } catch (error) {
-            res.status(400).send({ status: "error", message: error.message });
+            console.error("Error en addProduct Controller:", error);
+            res.status(500).send({ status: 'error', message: error.message });
         }
-    };
+    }
 
     getById = async (req, res) => {
         try {

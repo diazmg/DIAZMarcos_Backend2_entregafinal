@@ -1,45 +1,61 @@
 showButtonCart();
 
 async function addToCart(pid) {
-    let cartId = localStorage.getItem('cartId');
+    try {
 
-    if (!cartId) {
-        const createCartResponse = await fetch('/api/carts', {
-            method: 'POST'
+        const addProductResponse = await fetch(`/api/carts/products/${pid}`, {
+            method: 'POST',
+            credentials: 'include'
         });
 
-        const createCart = await createCartResponse.json();
 
-        if (createCart.status === 'error') {
-            return alert(createCart.message);
+        if (addProductResponse.status === 401) {
+            return alert('Debes iniciar sesión para agregar productos');
         }
 
-        console.log(createCart);
+        const contentType = addProductResponse.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            return alert('Error de conexión con el servidor');
+        }
 
-        cartId = createCart.payload._id;
-        localStorage.setItem('cartId', cartId)
+        const addProduct = await addProductResponse.json();
+
+        if (addProduct.status === 'error') {
+            return alert(addProduct.message);
+        }
+
+        showButtonCart();
+        alert('Producto añadido satisfactoriamente!');
+
+    } catch (error) {
+        console.error("Error en addToCart:", error);
+        alert('Hubo un error al intentar agregar el producto');
     }
-
-    const addProductResponse = await fetch(`/api/carts/${cartId}/product/${pid}`, {
-        method: 'POST'
-    });
-
-    const addProduct = await addProductResponse.json();
-
-    if (addProduct.status === 'error') {
-        return alert(addProduct.message);
-    }
-
-    showButtonCart();
-
-    alert('Producto añadido satisfactoriamente!');
 }
 
-function showButtonCart() {
-    cartId = localStorage.getItem('cartId');
+async function showButtonCart() {
+    try {
+        const response = await fetch('/api/sessions/current', {
+            credentials: 'include'
+        });
 
-    if (cartId) {
-        document.querySelector('#button-cart').setAttribute("href", `/cart/${cartId}`);
-        document.querySelector('.view-cart').style.display = "block";
-    }  
+        if (response.ok) {
+            const data = await response.json();
+
+            const cartId = data.user.cart;
+
+            if (cartId) {
+                const cartLink = document.querySelector('#button-cart');
+                const cartContainer = document.querySelector('.view-cart');
+
+                if (cartLink) cartLink.setAttribute("href", `/cart/${cartId}`);
+                if (cartContainer) cartContainer.style.display = "block";
+            }
+        } else {
+            const cartContainer = document.querySelector('.view-cart');
+            if (cartContainer) cartContainer.style.display = "none";
+        }
+    } catch (error) {
+        console.log("Usuario no logueado o error de sesión");
+    }
 }
