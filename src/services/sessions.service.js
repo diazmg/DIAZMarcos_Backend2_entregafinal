@@ -9,9 +9,9 @@ export default class SessionsService {
         this.usersRepo = usersRepository;
     }
 
-    requestReset = async (email, baseUrl) => {
+    requestReset = async (email) => {
         const user = await this.usersRepo.getByEmail(email);
-        if (!user) return; // no revelar existencia
+        if (!user) return;
 
         const token = crypto.randomBytes(32).toString("hex");
         const tokenHash = sha256(token);
@@ -22,8 +22,7 @@ export default class SessionsService {
             resetPasswordExpires: expires,
         });
 
-        const resetUrl = `${baseUrl}/api/sessions/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
-        await sendResetMail({ to: email, resetUrl });
+        await sendResetMail({ to: email, token, email });
     };
 
     resetPassword = async ({ email, token, newPassword }) => {
@@ -31,6 +30,7 @@ export default class SessionsService {
         if (!user) throw new Error("Invalid token");
 
         const tokenHash = sha256(token);
+
         if (
             !user.resetPasswordToken ||
             !user.resetPasswordExpires ||
@@ -40,7 +40,6 @@ export default class SessionsService {
             throw new Error("Invalid or expired token");
         }
 
-        // evitar misma contraseña
         if (isValidPassword(user, newPassword)) {
             throw new Error("New password must be different");
         }

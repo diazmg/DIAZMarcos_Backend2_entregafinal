@@ -83,4 +83,11 @@ router.get("/cart/:cid", async (req, res) => {
     }
 });
 
+router.get("/forgot-password", (req, res) => {
+    res.render("forgot-password", {
+        title: "Recuperar contraseña",
+        style: "index.css"
+    });
+});
+
 export default router;
