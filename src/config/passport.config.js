@@ -59,7 +59,7 @@ const initializePassport = () => {
         }
     ));
 
-    passport.use("jwt", new JwtStrategy(
+    passport.use("current", new JwtStrategy(
         {
             jwtFromRequest: ExtractJwt.fromExtractors([
                 ExtractJwt.fromAuthHeaderAsBearerToken(),

@@ -34,28 +34,33 @@ async function addToCart(pid) {
 }
 
 async function showButtonCart() {
+    const cartLink = document.querySelector("#button-cart");
+    const cartContainer = document.querySelector(".view-cart");
+
+    if (!cartLink || !cartContainer) return;
+
     try {
-        const response = await fetch('/api/sessions/current', {
-            credentials: 'include'
-        });
+        const response = await fetch("/api/sessions/current", { credentials: "include" });
 
-        if (response.ok) {
-            const data = await response.json();
-
-            const cartId = data.user.cart;
-
-            if (cartId) {
-                const cartLink = document.querySelector('#button-cart');
-                const cartContainer = document.querySelector('.view-cart');
-
-                if (cartLink) cartLink.setAttribute("href", `/cart/${cartId}`);
-                if (cartContainer) cartContainer.style.display = "block";
-            }
-        } else {
-            const cartContainer = document.querySelector('.view-cart');
-            if (cartContainer) cartContainer.style.display = "none";
+        if (!response.ok) {
+            cartContainer.style.display = "none";
+            cartLink.setAttribute("href", "#");
+            return;
         }
-    } catch (error) {
-        console.log("Usuario no logueado o error de sesión");
+
+        const data = await response.json();
+        const cartId = data?.user?.cart;
+
+        if (!cartId || typeof cartId !== "string") {
+            cartContainer.style.display = "none";
+            cartLink.setAttribute("href", "#");
+            return;
+        }
+
+        cartLink.setAttribute("href", `/cart/${cartId}`);
+        cartContainer.style.display = "block";
+    } catch (e) {
+        cartContainer.style.display = "none";
+        cartLink.setAttribute("href", "#");
     }
 }

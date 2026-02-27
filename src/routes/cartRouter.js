@@ -36,13 +36,13 @@ router.get("/:cid", cartsController.getById);
 router.post("/", cartsController.create);
 router.post(
     "/products/:pid",
-    passport.authenticate("jwt", { session: false }),
+    passport.authenticate("current", { session: false }),
     authorize(["user"]),
     cartsController.addProduct
 );
 router.post(
     "/:cid/product/:pid",
-    passport.authenticate("jwt", { session: false }),
+    passport.authenticate("current", { session: false }),
     authorize(["user"]),
     cartsController.addProductAndRenderCart
 );
@@ -50,7 +50,7 @@ router.put("/:cid", cartsController.updateProducts);
 router.delete("/:cid", cartsController.clearCart);
 router.post(
     "/:cid/purchase",
-    passport.authenticate("jwt", { session: false }),
+    passport.authenticate("current", { session: false }),
     authorize(["user"]),
     cartsController.purchase
 );
