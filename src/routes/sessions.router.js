@@ -45,16 +45,38 @@ router.get("/current",
 
 
 router.post("/forgot-password", async (req, res) => {
-    const { email } = req.body;
-    const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 8080}`;
-    await sessionsService.requestReset(email, baseUrl);
-    res.send({ status: "success", message: "Si el usuario existe, se envió un email." });
+    try {
+        const { email } = req.body;
+        await sessionsService.requestReset(email);
+        return res.render("forgot-password", {
+            title: "Recuperar contraseña",
+            style: "index.css",
+            message: "Si el usuario existe, se envió un email.",
+        });
+    } catch (e) {
+        console.log("Forgot-password error:", e?.message);
+        return res.status(500).render("forgot-password", {
+            title: "Recuperar contraseña",
+            style: "index.css",
+            message: "No se pudo enviar el email. Revisá la configuración de correo.",
+        });
+    }
 });
 
 router.post("/reset-password", async (req, res) => {
-    const { email, token, newPassword } = req.body;
-    await sessionsService.resetPassword({ email, token, newPassword });
-    res.send({ status: "success", message: "Password actualizado." });
+    try {
+        const { email, token, newPassword } = req.body;
+        await sessionsService.resetPassword({ email, token, newPassword });
+        return res.redirect("/login");
+    } catch (e) {
+        return res.status(400).render("reset-password", {
+            title: "Nueva contraseña",
+            style: "index.css",
+            email: req.body.email,
+            token: req.body.token,
+            error: e.message,
+        });
+    }
 });
 
 export default router;

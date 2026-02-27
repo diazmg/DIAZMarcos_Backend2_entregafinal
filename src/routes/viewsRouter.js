@@ -90,4 +90,19 @@ router.get("/forgot-password", (req, res) => {
     });
 });
 
+router.get("/reset-password", (req, res) => {
+    const { token, email } = req.query;
+
+    if (!token || !email) {
+        return res.render("notFound", { title: "Not Found", style: "index.css" });
+    }
+
+    res.render("reset-password", {
+        title: "Nueva contraseña",
+        style: "index.css",
+        token,
+        email,
+    });
+});
+
 export default router;

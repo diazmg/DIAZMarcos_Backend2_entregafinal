@@ -1,8 +1,8 @@
+import "dotenv/config";
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import handlebars from 'express-handlebars';
 import { Server } from 'socket.io';
-import dotenv from "dotenv";
 import passport from "passport";
 
 import connectMongoDB from './config/db.js'
@@ -16,8 +16,6 @@ import cartRouter from './routes/cartRouter.js';
 import viewsRouter from './routes/viewsRouter.js';
 import sessionsRouter from "./routes/sessions.router.js";
 
-//Inicialización de variables de entorno
-dotenv.config();
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
