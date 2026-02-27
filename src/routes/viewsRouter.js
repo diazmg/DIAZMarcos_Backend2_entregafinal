@@ -62,21 +62,25 @@ router.get('/realtimeproducts', async (req, res) => {
     });
 });
 
-router.get('/cart/:cid', async (req, res) => {
-    const response = await CartService.getById(req.params.cid);
+router.get("/cart/:cid", async (req, res) => {
+    try {
+        const response = await CartService.getById(req.params.cid);
 
-    if (response.status === 'error') {
-        return res.render('notFound', {
-            title: 'Not Found',
-            style: 'index.css'
+        res.render("cart", {
+            title: "Carrito",
+            style: "index.css",
+            cart: response,
+            total: response.products.reduce(
+                (acc, p) => acc + (p.product?.price || 0) * p.quantity,
+                0
+            ),
+        });
+    } catch (error) {
+        return res.render("notFound", {
+            title: "Not Found",
+            style: "index.css",
         });
     }
-
-    res.render('cart', {
-        title: 'Carrito',
-        style: 'index.css',
-        products: JSON.parse(JSON.stringify(response.products))
-    });
 });
 
 export default router;

@@ -59,7 +59,7 @@ button, .button {
 }
 
 .view-cart {
-    display: none;
+    display: block;
     position: absolute;
     right: 10px;
     top: 15px;

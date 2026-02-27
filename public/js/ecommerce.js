@@ -10,26 +10,21 @@ async function addToCart(pid) {
 
 
         if (addProductResponse.status === 401) {
-            return alert('Debes iniciar sesión para agregar productos');
         }
 
         const contentType = addProductResponse.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
-            return alert('Error de conexión con el servidor');
         }
 
         const addProduct = await addProductResponse.json();
 
         if (addProduct.status === 'error') {
-            return alert(addProduct.message);
         }
 
         showButtonCart();
-        alert('Producto añadido satisfactoriamente!');
 
     } catch (error) {
         console.error("Error en addToCart:", error);
-        alert('Hubo un error al intentar agregar el producto');
     }
 }
 
@@ -60,7 +55,7 @@ async function showButtonCart() {
         cartLink.setAttribute("href", `/cart/${cartId}`);
         cartContainer.style.display = "block";
     } catch (e) {
-        cartContainer.style.display = "none";
-        cartLink.setAttribute("href", "#");
+        cartContainer.style.display = "block";
+        if (cartLink) cartLink.setAttribute("href", "#");
     }
 }
